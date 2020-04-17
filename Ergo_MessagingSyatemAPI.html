@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" href="QuickMessage.css" >
+		<!--script type="text/javascript" src="C:\POC_ERGO\AppData\QuickMessage.js"></script-->
+		<script>
+		/* Quick Message Javascript Files to load the data from Json File for ERGO Project*/
+var QuickMessageData="C:\\POC_ERGO\\DataSource\\TestData.json"
+var ReadXMLData = "C:\\POC_ERGO\\DataSource\\ShortSoapUiRequest.xml"
+var tempXMLfile="C:\\POC_ERGO\\POC\\Template.xml"
+var GeneratedXML = "C:\\POC_ERGO\\Report\\Request\\"
+var JsonData_Length
+var col_Length
+var col = []
+var XMLfile = ""
+var selectedrow
+var singleSoapMessageProgram="C:\\POC_ERGO\\SendSoapMessage.bat"
+var product
+
+/*This function sets product to load data*/
+function loadProduct()
+	{
+	var e = document.getElementById("slct");
+	product = e.options[e.selectedIndex].text;
+	if(product!=="SELECT A PRODUCT")
+		{
+		document.getElementById("answer1").checked = false
+		document.getElementById("ctrl01").disabled = false
+		document.getElementById("QuickMsg").style.display = 'none'
+		}
+	if(product==="SELECT A PRODUCT")
+		{
+		document.getElementById("answer1").checked = false
+		document.getElementById("ctrl01").disabled = true
+		document.getElementById("QuickMsg").style.display = 'none'
+		}
+	}
+
+/* This function dynamically created a Html table and feed the JSON data into it*/
+function CreateTableFromJSON(selectedProduct) 
+	{
+	var divContainer = document.getElementById("QuickMsg");
+	while (divContainer.hasChildNodes()) 
+		{
+		divContainer.removeChild(divContainer.lastChild);
+		}
+	var getData = JSON.parse(readxmlFile(QuickMessageData).replace(selectedProduct,"person"));
+	var data = getData.person;
+	JsonData_Length = data.length
+	for (var i = 0; i < JsonData_Length; i++) 
+		{
+		for (var key in data[i]) 
+			{
+			if (col.indexOf(key) === -1) 
+				{
+				col.push(key);
+				}
+			}
+		}
+	col.push("Action");
+	var table = document.createElement("table");
+	table.id = "QuickMsgTbl"
+	table.setAttribute('className','table table-striped header-fixed');
+	var tr = table.insertRow(-1);
+	col_Length=col.length;
+	for (var i = 0; i < col_Length; i++) 
+		{
+		var thead = document.createElement("thead");
+		var th = document.createElement("th");
+		th.innerHTML = col[i];
+		tr.appendChild(th);
+		}
+	for (var i = 0; i < JsonData_Length; i++) 
+		{
+		tr = table.insertRow(-1);
+		for (var j = 0; j < col_Length; j++) 
+			{
+			if((j+1) == col_Length)
+				{
+				var tabCell = tr.insertCell(-1);
+				tabCell.id="QuickMessageDataCell"+"_"+i+"_"+j;
+				tabCell.style="text-align:center;";
+				
+				var div=document.createElement("div");
+				div.setAttribute('class','btn-group');
+				tabCell.appendChild(div);
+
+				var check= document.createElement("input");
+				check.id = "checkBox"+"_"+i+"_"+j;
+				check.type = "checkbox";
+				check.checked=false;
+				check.onclick=enableManualRequest
+				tabCell.appendChild(check);
+				var createBtn= document.createElement("button");
+				createBtn.type="button"
+				createBtn.id="createBtn"+"_"+i+"_"+j
+				createBtn.setAttribute('class', 'button-success pure-button');
+				createBtn.rowIndex=i
+				createBtn.appendChild(document.createTextNode("CreateMessage"));
+				createBtn.onclick = createRequest
+				createBtn.disabled = true
+				tabCell.appendChild(createBtn);
+				var sendBtn= document.createElement("button");
+				sendBtn.type="button"
+				sendBtn.id="sendBtn"+"_"+i+"_"+j
+				sendBtn.setAttribute('class', 'button-error pure-button');
+				sendBtn.appendChild(document.createTextNode("SendMessage"));
+				sendBtn.onclick = sendRequest
+				sendBtn.disabled = true
+				tabCell.appendChild(sendBtn);
+				}
+			else
+				{
+				var tabCell = tr.insertCell(-1);
+				tabCell.id="QuickMessageDataCell"+"_"+i+"_"+j
+				tabCell.innerHTML = data[i][col[j]];
+				}
+			}
+		}
+	divContainer.appendChild(table);
+	col = []
+    }
+/* This function is used to read the Template of XML file */
+function readxmlFile(filename)	
+	{
+	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var f1 = fso.OpenTextFile(filename, 1, false,-2); //0 for ascii -2 for system default -1 unicode
+	var text = f1.ReadAll();
+	f1.close();
+	return text;
+	}
+
+/* This function is Used to get the element node and its values */	
+function getelement(element)
+	{
+    if(element.childNodes.length==0)
+    	{
+        return element;
+        }
+    else
+    	{
+        return getelement(element.childNodes[0]);
+        }
+    }
+
+/* Save the generated output xml file in a given location */
+function writeXmlString(directoryname,filename,standardfilexml) 
+	{
+	var strDirectory = directoryname
+	var strFile = filename
+	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var FileObject =  fso.OpenTextFile(strDirectory+strFile, 2, true,-2); 
+	FileObject.write(standardfilexml);
+	FileObject.close();
+	}
+
+/*This function reads html node valuse and feeds leaf node value*/
+function getHTMLElement(htmlElementID,htmlElementIDChkBx,xmlTag,xmlDoc)
+{
+	getelement(xmlDoc.getElementsByTagName(xmlTag)[0]).nodeValue=document.getElementById(htmlElementID).innerHTML
+}
+
+function getRowIndex(x) 
+{
+  selectedrow = x.rowIndex;
+}	
+	
+// This function is used to create request for a selected row
+function createRequest()  
+	{	
+	var parser, xmlDoc,Record
+	XMLfile = readxmlFile(ReadXMLData);	
+	parser = new DOMParser();
+	XMLfile = XMLfile.replace( new RegExp( "\>[\s]+\<" , "g" ) , "><" ); 
+	xmlDoc = parser.parseFromString(XMLfile,"text/xml");
+	getRowIndex(this);
+	if(selectedrow != null )
+	{
+		for (var j = 0; j < col_Length-1; j++) 
+		{
+			var Tariff= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+0).innerHTML;
+			var ContractIdExt= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+1).innerHTML;
+			var effectiveDateBegin= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+2).innerHTML;
+			var effectiveDateEnd= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+3).innerHTML;
+			var PartnerIdExt= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+4).innerHTML;
+			var GebDate= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+5).innerHTML;
+			var Sex= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+6).innerHTML;
+			var Zahlweise= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+7).innerHTML;
+			var ExZahlweise= document.getElementById('QuickMessageDataCell'+"_"+selectedrow+"_"+8).innerHTML;
+			
+			//	Rule: Tariff -> tfid 
+			if(xmlDoc.getElementsByTagName("typ1:tfId").length != 0 )
+			{
+			 XMLfile = XMLfile.replace("<typ1:tfId>ERO_KAP2_2007</typ1:tfId>", "<typ1:tfId>"+Tariff+"</typ1:tfId>") 
+			}
+			//	Rule: Product -> pdid 
+			if(xmlDoc.getElementsByTagName("typ1:pdId").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:pdId>ERO_KAP_HM_2007</typ1:pdId>", "<typ1:pdId>"+product+"</typ1:pdId>")  
+			}
+			if(xmlDoc.getElementsByTagName("typ:contractIdExt").length != 0 )
+			{
+			// Rule: contractId -> ContractIdExt, LvIdExt
+			XMLfile = XMLfile.replace("<typ:contractIdExt>LV122134450</typ:contractIdExt>", "<typ:contractIdExt>"+ContractIdExt+"</typ:contractIdExt>") 
+			}
+			if(xmlDoc.getElementsByTagName("typ1:lvIdExt").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:lvIdExt>LV122134450</typ1:lvIdExt>", "<typ1:lvIdExt>"+ContractIdExt+"</typ1:lvIdExt>") //
+			}
+			//Rule: effectiveDateBegin -> EffectiveDate, BeginnVT, HauptFaelligkeit, DatAntrEingBD, EmpfBerProt
+			if(xmlDoc.getElementsByTagName("typ:effectiveDate").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ:effectiveDate>2019-12-01</typ:effectiveDate>", "<typ:effectiveDate>"+effectiveDateBegin+"</typ:effectiveDate>")
+			}
+			if(xmlDoc.getElementsByTagName("typ1:beginnVT").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:beginnVT>2019-12-01</typ1:beginnVT>", "<typ1:beginnVT>"+effectiveDateBegin+"</typ1:beginnVT>")
+			}
+			if(xmlDoc.getElementsByTagName("typ1:hauptFaelligkeit").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:hauptFaelligkeit>2019-12-01</typ1:hauptFaelligkeit>", "<typ1:hauptFaelligkeit>"+effectiveDateBegin+"</typ1:hauptFaelligkeit>")
+			}
+			if(xmlDoc.getElementsByTagName("typ1:datAntrEingBD").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:datAntrEingBD>2019-12-01</typ1:datAntrEingBD>", "<typ1:datAntrEingBD>"+effectiveDateBegin+"</typ1:datAntrEingBD>")
+			}
+			if(xmlDoc.getElementsByTagName("typ1:empfBerProt").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:empfBerProt>2019-12-01</typ1:empfBerProt>", "<typ1:empfBerProt>"+effectiveDateBegin+"</typ1:empfBerProt>")
+			}
+			 //Rule: effectiveDateEnd -> Labl, Bzabl, Vtabl   Note: Labl not foud in the given xml
+			if(xmlDoc.getElementsByTagName("typ1:bzabl").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:bzabl>2029-12-01</typ1:bzabl>","<typ1:bzabl>"+effectiveDateEnd+"</typ1:bzabl>");
+			}
+			if(xmlDoc.getElementsByTagName("typ1:vtabl").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:vtabl>2029-12-01</typ1:vtabl>","<typ1:vtabl>"+effectiveDateEnd+"</typ1:vtabl>");
+			}
+			// Rule: PartnerIdExt -> PartnerIdExt  -> Depending on the partnerIdExt the GebDate (BirthDate) and Sex have to change   // need to add some condition here
+			
+			if(xmlDoc.getElementsByTagName("typ1:gebDat").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:gebDat>1967-02-02</typ1:gebDat>","<typ1:gebDat>"+GebDate+"</typ1:gebDat>");
+			}
+			if(xmlDoc.getElementsByTagName("typ1:sex").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:sex>MAENNLICH</typ1:sex>","<typ1:sex>"+Sex+"</typ1:sex>");				
+			}
+			//	Rule: Zahlweise (method of payment) -> ZweiInk
+			if(xmlDoc.getElementsByTagName("typ1:zweiInk").length != 0 )
+			{
+			XMLfile = XMLfile.replace("<typ1:zweiInk>MONATLICH</typ1:zweiInk>","<typ1:zweiInk>"+Zahlweise+"</typ1:zweiInk>");
+			}
+			//	Rule: Exzahlweise (method of payment for disbursement) - > ZweiExk */  // ZweiExk is not found in the given xml 
+		} 
+		Record= selectedrow+1;
+		//outputXMLFileName = "SoProcessApplicationImport_Record_"+Record+".xml";
+		outputXMLFileName = "SoProcessApplicationImport.xml";
+	}
+	writeXmlString(GeneratedXML,outputXMLFileName,XMLfile); 
+	alert("xml is generated for the Selected Record"); 
+	}	
+// This function is used to send request created for a selected row
+function sendRequest()  
+	{	
+	var wshShell = new ActiveXObject("WScript.Shell");
+	wshShell.run(singleSoapMessageProgram);
+	}
+	
+//This message is used to enable create and send button based upon the check box	
+function enableManualRequest()  
+	{
+	flag = "Continue"
+	var no_Row = document.getElementById('QuickMsgTbl').rows.length
+	var no_Column = document.getElementById('QuickMsgTbl').rows[0].cells.length
+	for (var i = 0; i < (no_Row-1); i++) 
+		{
+		if(document.getElementById("checkBox_"+i+"_9").checked)
+			{
+			document.getElementById("sendBtn_"+i+"_9").disabled = false
+			document.getElementById("createBtn_"+i+"_9").disabled = false
+			}
+		else
+			{
+			document.getElementById("sendBtn_"+i+"_9").disabled = true
+			document.getElementById("createBtn_"+i+"_9").disabled = true
+			}
+		}
+	}
+
+//This function loads json data in screen to allow user to send message manually
+function displayDataGrid()
+	{
+	document.getElementById("QuickMsg").style.display = 'block'
+	var e = document.getElementById("slct");
+	var product = e.options[e.selectedIndex].text;
+	CreateTableFromJSON(product)
+	}
+
+//This function will display the user data grid
+function loaduserdataInitiate()
+	{
+	document.getElementById("id_dataGrid000").style.display = 'block'
+	document.getElementById("id_dataGrid001").style.display = 'block'
+	}
+		</script>
+	</head>
+	<body id="showData" onload="loadProduct()";>
+       <form>	
+		<header id="header">
+			<div id="logo">
+				<h1 style="text-align:center">Process Application Import</h1>
+			</div>
+		</header>
+		<div class="myBox">	
+			<main>
+				<div class="innertube" id="id_dataGrid000" style="display:none">
+				   <h2 style="text-align:left"><b><u>QUICK MESSAGE</b></h2>
+				</div>
+				<div class="radiobtnselection" id="id_dataGrid001" style="display:none">
+				 <h3>SEND BULK MESSAGE</h3>
+				 <div class="select"> 
+                <select name="slct" id="slct" onchange="loadProduct()"> 
+					<option value="0">SELECT A PRODUCT</option> 
+					<option value="1">ERO_KAP_HM1987</option> 
+					<option value="2">Product1</option>
+				</select> 
+                 </div> 
+				 <br>
+				    <div id="ctrl01"class="control" disabled = "true">
+                         <label class="radio">
+                         <input type="radio" name="answer" onclick="alert('Close the browser to send Bulk message');"><b>Automatically</b></label>
+                         <label class="radio">
+                         <input type="radio" id="answer1" name="answer" onclick="displayDataGrid();" ><b>Manually</b></label>
+                    </div>
+					<br>
+				</div>
+				<br>
+				<div class="container" id="QuickMsg" style="display:none">
+				<table id="QuickMsgTbl" class="table table-striped header-fixed" style="display:none">
+					<thead>
+							<tr>
+								<th>SL NO</th>
+								<th>PRODUCT</th>
+								<th>TARIFF</th>
+								<th>VSNR</th>
+								<th>PARTNER</th>
+								<th>DOB</th>
+								<th>SEX</th>
+								<th>ACTION</th>
+							</tr>
+						</thead>
+						<tbody id="QuickMessageBody">
+							    <tr>
+									<td>1</td>
+									<td>X</td>
+									<td>Y</td>
+									<td>1</td>
+									<td>abcd1234</td>
+									<td>11-04-2019</td>
+									<td>M</td>
+									<td style="text-align:center;">
+										<div class="btn-group">
+											<input type="checkbox" checked >
+											<button class="button-success pure-button" onclick="sendRequest()" disabled><b>Create Message</b></button>
+											<button class="button-error pure-button" onclick="sendRequest()" disabled><b>Send Message</b></button>
+										</div>
+									</td>
+								</tr>
+								<tr>
+									<td>1</td>
+									<td>X</td> 
+									<td>Y</td>
+									<td>1</td>
+									<td>abcd1234</td>
+									<td>11-04-2019</td>
+									<td>M</td>
+									<td style="text-align:center;">
+										<div class="btn-group">
+											<input type="checkbox" checked >
+											<button class="button disabled"><b>Create Message</b></button>
+											<button class="button disabled" onclick="sendRequest()"><b>Send Message</b></button>
+										</div>
+									</td>
+							    </tr>
+						</tbody>
+				</table> 
+				<br>
+				<br>
+				<br>
+				</div>
+			</main>
+		</div>
+		<nav id="nav">
+			<div class="innertube">
+				<h1 id="question">Would you like to create a quick quote?</h1>
+					<ul>
+					<div class="btn-group"> <!--onclick="displayquickmsg(mydiv)"-->
+						<div class="navbutton" >
+					          <a style="color:white"; onclick="loaduserdataInitiate();"><b>Click Here</b></a>
+					    </div>
+					</div>
+					</ul>
+				<h1 id="question">Would you like to create a full quote?</h1>
+					<ul>
+						<div class="btn-group">
+						    <div class="navbutton" >
+					            <a href="ERGO_XML_REQUEST_PARSE.html?section=ERGO_XML_REQUEST_PARSE" target="_blank" style="color:white";><b>Click Here</b></a>
+					        </div>
+					    </div>
+					</ul>
+					<br>
+				    <div class="buttons">
+				        <div class="btn-group" id="footerbtn">
+				           <br>
+					         <button class="button" id="resetbtn" style="text-align:center"><b>RESET</b></button>
+					<!--button class="button" id="requestbtn" onclick="sendBulkRequest()"><b>Send Bulk Request</b></button -->
+					       <br>
+				        </div>
+			        </div>
+			</div>
+		</nav>
+		<div class="footer">
+		</div>  
+      </form>
+	</body>
+</html>

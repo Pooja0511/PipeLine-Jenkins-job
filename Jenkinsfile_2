@@ -1,0 +1,36 @@
+pipeline{
+	agent any
+	stages{ 
+		//stage ('SCM Check Out'){
+		//	steps {
+		//		git url: 'https://github.com/AutomationTEst12345/ExperimentDemBobo.git'
+		//	}
+		//}
+		stage ('Run Smoke Test') { 
+			steps {
+			
+				bat label: '', script: 'cscript uft.vbs'
+			}
+		} 
+		stage ('Publish Report') { 
+			steps {
+				publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'DairyManagement1/Res1/Report', reportFiles: 'run_results.html', reportName: 'SmokeTestReport', reportTitles: ''])
+			}
+		}
+		stage ('Update Xray') { 
+			steps {
+				bat label: '', script: 'java -jar saveJson.jar'
+				bat label: '', script: 'curl -H "Content-Type: application/json" -X POST -u dea:P@$$w0rd@123 --data @report.json http://10.118.19.250:8080/rest/raven/1.0/import/execution'
+			}
+		}
+		stage ('Clean Workspace for Current job') { 
+			steps {
+				dir('DairyManagement1/Res1') {
+					deleteDir()
+				}
+				//bat label: '', script: 'cd DairyManagement1/Res1'
+				//deleteDir()
+			}
+		}		
+	}
+}

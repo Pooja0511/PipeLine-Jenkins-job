@@ -1,0 +1,418 @@
+body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+			height: 100%; 
+			max-height: 100%; 
+			font-family:Sans-serif;
+			/* line-height: 1.5em; */
+			overflow: scroll;
+			overflow-y : auto;
+			text-decoration: none;
+			
+		}
+		
+		#header {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100px; 
+			overflow: hidden; 
+			/* background: #BCCE98; */
+			font: 20px/25px sans-serif;
+			color:white;
+           /*  background:orange linear-gradient(#ffe259,#ffa751); */
+			background:orange linear-gradient(orange,#ff8c00);	
+			/* background:linear-gradient(180deg,#ff8a00,#e52e71; */
+		}
+		
+		#nav {
+			position: absolute; 
+			top: 100px; 
+			left: 0; 
+			bottom: 0;
+			width: 230px;
+			overflow: hidden; 
+			/* background: #DAE9BC;  */
+			background: #100e17;
+			
+			/* background: #009688!important */
+			/*  background:orange linear-gradient(#fdc830,#f37335); */
+		/* background:orange linear-gradient(orange,#ff8c00);	 */
+		}
+		
+		#logo {
+			padding:10px;
+		}
+		
+		main {
+			position: fixed;
+			top: 100px; /* Set this to the height of the header */
+			left: 230px; 
+			right: 0;
+			bottom: 0;
+			overflow: auto; 
+			background: #fff;
+		}
+		
+		.innertube {
+			margin: 15px; /* Provides padding for the content */
+		}
+		
+		p {
+			color: #555;
+		}
+
+		nav ul {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+		}
+		
+		nav ul a {
+			color: darkgreen;
+			text-decoration: none;
+		}
+				
+		/*IE6 fix*/
+		* html body{
+			padding: 100px 0 0 230px; /* Set the first value to the height of the header and last value to the width of the nav */
+		}
+		
+		* html main{ 
+			height: 100%; 
+			width: 100%; 
+		}
+		
+		table{
+     font-size:20px;
+     margin-bottom: 20px;
+     border-collapse: collapse;
+     height: 10px !important;
+     overflow: scroll;
+	 width:100%;
+}
+ table, th, td{
+     border: 3px solid #fff;
+	 /* border: 1px solid black; */
+  border-collapse: collapse;
+  
+}
+ table th, table td{
+     padding: 0px !important;
+     text-align: center;
+}
+.table>thead>tr>th{
+	
+	border-bottom:3px solid #fff;
+}
+table#QuickMsgTbl tr:nth-child(even) {
+  background-color: #eee;
+}
+table#QuickMsgTbl tr:nth-child(odd) {
+ background-color: #fff;
+}
+table#QuickMsgTbl th {
+  background-color: black;
+color: white;}
+
+.clsActionTable
+{
+    width: 100%;
+    color: white;
+    font-size: smaller;
+}
+
+.clsActionButton
+{
+    width: 128px;
+}
+#idActionPlane
+{
+left: 0px;
+bottom: 0px;
+width:100%;
+background-color: #4E5A81;
+color: White;
+}
+#question{
+	color:white;
+}
+.footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   background-color: black;
+   color: white;
+   text-align: center;
+   height:60px;
+   /* background:orange linear-gradient(orange,#ff8c00);	 */
+  
+   
+}
+
+.example_b {
+color: #fff !important;
+text-transform: uppercase;
+text-decoration: none;
+background: #60a3bc;
+padding: 20px;
+border-radius: 50px;
+display: inline-block;
+border: none;
+transition: all 0.4s ease 0s;
+}
+
+.buttons {
+  width: auto;
+}
+
+.action_btn {
+  width: auto;
+  border-radius: 50px;
+  transition: all 0.4s ease 0s;
+  
+}
+
+.btn-group .button{
+  /* background-color: #4CAF50; /* Green */ 
+ 	background-color:#4CAF50;
+  border: 1px solid green;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  float: center;
+  border-radius: 50px;
+  font:bold;
+}
+
+.btn-group .button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+.btn-group .button:hover {
+  background-color: #3e8e41;
+  
+}
+
+.btn-group .navbutton{
+  /* background-color: #4CAF50; /* Green */ 
+ 	background-color:#4CAF50;
+  border: 1px solid green;
+  color: white;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  float: center;
+  border-radius: 50px;
+  font:bold;
+  
+}
+
+.btn-group .navbutton:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+.btn-group .navbutton:hover {
+  background-color: #3e8e41;
+  
+}
+u {
+    text-decoration: none;
+}
+
+.button-success,
+        .button-error,
+        .button-warning,
+        .button-secondary {
+            color: white;
+            border-radius: 20px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+			cursor: pointer;
+			font:bold;
+        }
+
+        .button-success {
+            background: rgb(28, 184, 65); /* this is a green */
+        }
+
+        .button-error {
+            background: rgb(202, 60, 60); /* this is a maroon */
+			font:bold;
+        }
+		
+		
+		#resetbtn{
+			
+			padding-left:50px;
+			padding-right:50px;
+			text-align:center;
+			background:rgb(202, 60, 60);
+			
+			
+			/* position:absolute;
+			display:block; 
+            position: absolute; */
+        /*     top: 100px; */
+            /* right: 10px; */
+		         }
+		#requestbtn{
+			
+			margin-left: 20px;
+		}
+		
+.myBox {
+border: none;
+padding: 5px;
+font: 20px/26px sans-serif;
+width: 200px;
+height: 200px;
+overflow: scroll;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+width: 12px;
+height: 12px;
+}
+
+::-webkit-scrollbar-track {
+border-radius: 12px;
+}
+
+::-webkit-scrollbar-track:vertical {
+background: -webkit-linear-gradient(top, white, gold); 
+}
+
+::-webkit-scrollbar-track:horizontal {
+background: -webkit-linear-gradient(left, white, gold); 
+}
+
+::-webkit-scrollbar-thumb {
+background: yellowgreen;  
+border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+background: #88ba1c;  
+}
+
+.inline-container {
+  vertical-align: middle;
+  overflow-x: scroll; 
+}
+
+/* .QuickMsg{
+	
+	display:none;
+} */
+/* .container{
+	display:none;
+}
+.radiobtnselection
+{
+	display:none;
+} */
+.radiobtnselection
+{
+	padding-left:60px;
+	/* padding-right:30px; */
+	/* padding-bottom:1px; */
+	padding-top:1px;
+	/* height:100px; */
+	/* border:5px solid; */
+	/* width:300px; */
+	/* background-color:rgb(202, 60, 60); */
+	/* background:orange linear-gradient(#6D6027,#D3CBB8);	 */
+	/* border-radius:50%; */
+	color:white;
+	background:orange linear-gradient(orange,#ff8c00);	
+	
+	
+}
+.quickbtn{
+	display:none;
+}
+/* .table{
+	
+	display:none;
+} */
+
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #9c9494;
+  /* color: #666666; */
+   color: white;
+  font:bold;
+}
+#footerbtn{
+	padding-top:260px;
+	
+}
+
+select { 
+                -webkit-appearance: none; 
+                -moz-appearance: none; 
+                -ms-appearance: none; 
+                appearance: none; 
+                outline: 0; 
+                background: white; 
+                background-image: none; 
+                border:1px solid black; 
+				font:bold;
+            } 
+            .select { 
+                position: relative; 
+                display: block; 
+                width: 20em; 
+                height: 3em; 
+                line-height: 3; 
+                background: #2C3E50; 
+				/* background: #000000; */
+                overflow: hidden; 
+                border-radius: .25em; 
+				font:bold;
+            } 
+            select { 
+                width: 100%; 
+                height: 100%; 
+                margin: 0; 
+                padding: 0 0 0 .5em; 
+                color: #000000; 
+                cursor: pointer; 
+				font:bold;
+				font-size:15px;
+            } 
+            select::-ms-expand { 
+                /* display: none;  */
+            }  
+            .select::after { 
+                content: '\25BC'; 
+                position: absolute; 
+                top: 0; 
+                right: 0; 
+                bottom: 0; 
+                padding: 0 1em; 
+                background: #34495E; 
+                pointer-events: none; 
+            } 
+			.select:hover::after { 
+                color: #F39C12; 
+            } 
+              
+            <!-- For different browsers -->
+            .select::after { 
+                -webkit-transition: .25s all ease; 
+                -o-transition: .25s all ease; 
+                transition: .25s all ease; 
+            } 
